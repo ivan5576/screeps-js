@@ -12,3 +12,16 @@ npm i
 
 ### How to generate token
 https://docs.screeps.com/auth-tokens.html
+
+### Wiki
+
+### Remove constructions
+
+	const structures = Game.spawns['SpawnOne'].room.find(FIND_CONSTRUCTION_SITES);
+	const walls = _.filter(structures, { 'structureType': STRUCTURE_WALL });
+	console.log(structures);
+	// for (const wall of walls) { wall.remove(); }
+
+	const ramparts = _.filter(structures, { 'structureType': STRUCTURE_RAMPART });
+	// console.log(ramparts);
+	// for (const rampart of ramparts) { rampart.remove(); }
