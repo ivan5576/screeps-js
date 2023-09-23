@@ -3,12 +3,12 @@ import { logger } from './util/logger';
 
 import { clearMemoryCreeps } from './memory/clearMemoryCreeps';
 import { countCreepsW48S3 } from './memory/countCreepsW48S3';
-import { countCreepsW48S2 } from './memory/countCreepsW48S2';
+// import { countCreepsW48S2 } from './memory/countCreepsW48S2';
 
 import { spawnNewCreeps } from './creeps/W48S3/spawningCreeps';
 import { rolePrioritiesW48S3 } from './creeps/W48S3/rolePrioritiesW48S3';
-import { rolePrioritiesW48S2 } from './creeps/W48S2/rolePrioritiesW48S2';
-import { roleReserveController } from './creeps/W48S3/role/roleReserveController';
+// import { rolePrioritiesW48S2 } from './creeps/W48S2/rolePrioritiesW48S2';
+// import { roleReserveController } from './creeps/W48S3/role/roleReserveController';
 
 global.logger = logger;
 
@@ -16,35 +16,35 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
 	// console.log(`Current game tick is ${Game.time}`);
 
-	const linkTo = Game.rooms['W48S3'].lookForAt('structure', 20, 34)[0];
 	clearMemoryCreeps();
-	// addCreepsNumsToMemory();
 	countCreepsW48S3();
-	countCreepsW48S2();
-	// console.log(linkTo.store[RESOURCE_ENERGY])
+	// countCreepsW48S2();
 	spawnNewCreeps();
 	towersDefendRoom();
 	towersRepairStructures();
 	towersHealCreeps()
-
-	if (linkTo.store[RESOURCE_ENERGY] < 300) {
-		linkTransferEnergy();
-	}
+	linkTransferEnergy();
 
 	for (let name in Game.creeps) {
 		let creep = Game.creeps[name];
-		if ((Memory.creeps[name].targetRoom == 'W48S3') && !(creep.memory.role == 'reserveController')) {
-			rolePrioritiesW48S3(creep, name);
-		} else if (creep.memory.role == 'reserveController') {
-			roleReserveController(creep);
-		} else if (Memory.creeps[name].targetRoom == 'W48S2') {
-			rolePrioritiesW48S2(creep);
+		if (Memory.creeps[name].targetRoom == 'W48S3') {
+			rolePrioritiesW48S3(creep);
 		}
+
+		// const linkTo = Game.rooms['W48S3'].lookForAt('structure', 20, 34)[0];
+		// console.log(creep.withdraw(Game.getObjectById(linkTo.id)))
+
+		// else if (creep.memory.role == 'reserveController') {
+		// 	roleReserveController(creep);
+		// } else if (Memory.creeps[name].targetRoom == 'W48S2') {
+		// 	rolePrioritiesW48S2(creep);
+		// }
 	}
 });
 
 Game.rooms['W48S3'].memory.role = Game.rooms['W48S3'].memory.role || {};
-Game.rooms['W48S3'].memory.creeps = Game.rooms['W48S3'].memory.creeps || [];
+Game.rooms['W48S3'].memory.globalRole = Game.rooms['W48S3'].memory.globalRole || {};
+// Game.rooms['W48S3'].memory.creeps = Game.rooms['W48S3'].memory.creeps || [];
 
 // add nums of all creeps by types in memory
 // const addCreepsNumsToMemory = () => {
@@ -78,7 +78,7 @@ const towersDefendRoom = () => {
 	}
 };
 
-// towers repair structures and heal creeps
+// towers repair structures
 const towersRepairStructures = () => {
 	const hostiles = Game.spawns['SpawnOne'].room.find(FIND_HOSTILE_CREEPS);
 	if (hostiles.length === 0) {
@@ -119,11 +119,11 @@ const towersHealCreeps = () => {
 // link transfer energy to another link
 const linkTransferEnergy = () => {
 	const linkFrom = Game.rooms['W48S3'].lookForAt('structure', 41, 43)[0];
-
 	const linkTo = Game.rooms['W48S3'].lookForAt('structure', 20, 34)[0];
-	console.log(linkTo)
-
-	linkFrom.transferEnergy(linkTo);
+	// console.log(linkTo)
+	if (linkTo.store[RESOURCE_ENERGY] < 799) {
+		linkFrom.transferEnergy(linkTo);
+	}
 };
 
 

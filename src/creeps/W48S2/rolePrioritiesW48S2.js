@@ -3,7 +3,7 @@ import { roleHarvester } from './role/roleHarvester';
 // import { roleUpgrader } from './role/roleUpgrader';
 // import { roleRepair } from './role/roleRepair';
 import { roleFillTower } from './role/fillTower';
-import { fillStorage } from './role/fillStorage';
+import { fillStorage } from '../W48S3/role/fillStorage';
 // import { roleSpawnRecoverer } from '../W48S3/role/roleSpawnRecoverer';
 import { roleSpawnRecoverer } from './role/roleSpawnRecoverer';
 
