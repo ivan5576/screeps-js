@@ -18,8 +18,10 @@ export const countCreepsW48S3 = () => {
   let globalRoleCounts = {
     harvester: 0,
     upgrader: 0,
+    fillerTower: 0,
     remoteHarvester: 0,
     attacker: 0,
+    reserver: 0,
   }
 
   for (let name in Memory.creeps) {
@@ -27,11 +29,13 @@ export const countCreepsW48S3 = () => {
     const creepGlobalRole = Memory.creeps[name].globalRole;
 
     // Увеличиваем счетчик соответствующей роли
-    if ((typeof roleCounts[creepRole] === 'number') && (Memory.creeps[name].targetRoom == 'W48S3')) {
-      roleCounts[creepRole]++;
-      roleCounts.allCreeps++;
-    } else if (typeof globalRoleCounts[creepGlobalRole] === 'number') {
+    if ((typeof globalRoleCounts[creepGlobalRole] === 'number') && (Memory.creeps[name].targetRoom == 'W48S3')) {
       globalRoleCounts[creepGlobalRole]++;
+
+      if ((typeof roleCounts[creepRole] === 'number') && (Memory.creeps[name].targetRoom == 'W48S3')) {
+        roleCounts[creepRole]++;
+        roleCounts.allCreeps++;
+      }
     }
   }
 

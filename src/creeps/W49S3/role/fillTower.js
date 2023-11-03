@@ -1,5 +1,8 @@
+// import { logger } from "../../../util/logger";
+
 export const fillTower = (creep) => {
-  let towers = _.filter(Game.spawns['SpawnOne'].room.find(FIND_MY_STRUCTURES), { 'structureType': STRUCTURE_TOWER });
+  let towers = _.filter(Game.spawns['SpawnW49S3'].room.find(FIND_MY_STRUCTURES), { 'structureType': STRUCTURE_TOWER });
+  // let emptyTower = towers.find((tower) => tower.store.getFreeCapacity(RESOURCE_ENERGY));
 
   const firstTower = towers[0];
   const secondTower = towers[1];
@@ -25,5 +28,4 @@ export const fillTower = (creep) => {
       creep.moveTo(thirdTower);
     }
   }
-
 };

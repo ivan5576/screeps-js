@@ -3,14 +3,23 @@ import { logger } from './util/logger';
 
 import { clearMemoryCreeps } from './memory/clearMemoryCreeps';
 import { countCreepsW48S3 } from './memory/countCreepsW48S3';
-// import { countCreepsW48S2 } from './memory/countCreepsW48S2';
+import { countCreepsW49S3 } from './memory/countCreepsW49S3';
+import { countCreepsW49S2 } from './memory/countCreepsW49S2';
 
 import { spawnNewCreeps } from './creeps/W48S3/spawningCreeps';
+import { spawnCreepsW49S3 } from './creeps/W49S3/spawnCreepsW49S3';
 import { rolePrioritiesW48S3 } from './creeps/W48S3/rolePrioritiesW48S3';
-// import { rolePrioritiesW48S2 } from './creeps/W48S2/rolePrioritiesW48S2';
-// import { roleReserveController } from './creeps/W48S3/role/roleReserveController';
+import { rolePrioritiesW49S3 } from './creeps/W49S3/rolePrioritiesW49S3';
+import { rolePrioritiesW49S2 } from './creeps/W49S2/rolePrioritiesW49S2';
+// import { roleReserveController } from './creeps/W48S2/role/roleReserveController';
 
 global.logger = logger;
+
+// Game.rooms['W48S3'].memory.role = Game.rooms['W48S3'].memory.role || {};
+// Game.rooms['W48S3'].memory.globalRole = Game.rooms['W48S3'].memory.globalRole || {};
+// Game.rooms['W49S3'].memory.role = Game.rooms['W49S3'].memory.role || {};
+// Game.rooms['W49S3'].memory.globalRole = Game.rooms['W49S3'].memory.globalRole || {};
+Memory.rooms.W49S2 = Memory.rooms.W49S2 || {};
 
 export const loop = ErrorMapper.wrapLoop(() => {
 
@@ -18,114 +27,170 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
 	clearMemoryCreeps();
 	countCreepsW48S3();
-	// countCreepsW48S2();
+	countCreepsW49S3();
+	countCreepsW49S2();
 	spawnNewCreeps();
-	towersDefendRoom();
-	towersRepairStructures();
-	towersHealCreeps()
+	spawnCreepsW49S3();
+	towersRepairAndDefendW48S3();
+	towersRepairAndDefendW49S3();
+	// towersHealCreeps()
 	linkTransferEnergy();
+	// sendW49S3FinderCreep();
 
 	for (let name in Game.creeps) {
 		let creep = Game.creeps[name];
 		if (Memory.creeps[name].targetRoom == 'W48S3') {
 			rolePrioritiesW48S3(creep);
 		}
-
-		// const linkTo = Game.rooms['W48S3'].lookForAt('structure', 20, 34)[0];
-		// console.log(creep.withdraw(Game.getObjectById(linkTo.id)))
-
-		// else if (creep.memory.role == 'reserveController') {
-		// 	roleReserveController(creep);
-		// } else if (Memory.creeps[name].targetRoom == 'W48S2') {
-		// 	rolePrioritiesW48S2(creep);
-		// }
+		else if (Memory.creeps[name].targetRoom == 'W49S3') {
+			rolePrioritiesW49S3(creep);
+		} else if (Memory.creeps[name].targetRoom == 'W49S2') {
+			rolePrioritiesW49S2(creep);
+		}
 	}
+
 });
 
-Game.rooms['W48S3'].memory.role = Game.rooms['W48S3'].memory.role || {};
-Game.rooms['W48S3'].memory.globalRole = Game.rooms['W48S3'].memory.globalRole || {};
-// Game.rooms['W48S3'].memory.creeps = Game.rooms['W48S3'].memory.creeps || [];
+const towersRepairAndDefendW48S3 = () => {
+	const towers = _.filter(Game.spawns['SpawnOne'].room.find(FIND_MY_STRUCTURES), { 'structureType': STRUCTURE_TOWER });
+	const firstTower = towers[0];
+	const secondTower = towers[1];
+	const thirdTower = towers[2];
 
-// add nums of all creeps by types in memory
-// const addCreepsNumsToMemory = () => {
-// 	const arr4BD = [];
-// 	const arr12BD = [];
+	const hostiles = secondTower.pos.findInRange(FIND_HOSTILE_CREEPS, 14);
+	const invader = secondTower.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+		filter: { owner: { username: 'Invader' } }
+	}) || [];
+	const allHostiles = hostiles.concat(invader);
+	const hasHostiles = allHostiles.length;
 
-// 	for (let name in Game.creeps) {
-// 		let creep = Game.creeps[name];
+	if (hasHostiles) {
 
-// 		if (creep.memory.body = '4BD') {
-// 			arr4BD.push(creep.memory.body);
-// 		} else if (creep.memory.body = '12BD') {
-// 			arr12BD.push(creep.memory.body);
-// 		}
-// 	}
+		towers.forEach(tower => tower.attack(allHostiles[0]));
 
-// 	Game.rooms['W48S3'].memory.CreepsCount.creeps4Body = arr4BD.length;
-// 	Game.rooms['W48S3'].memory.CreepsCount.creeps12Body = arr12BD.length;
-// 	Game.rooms['W48S3'].memory.CreepsCount.allCreeps = Object.keys(Game.creeps).length;
-// };
+	} else if (!hasHostiles) {
 
-// tower attack enemyes
-const towersDefendRoom = () => {
-	const hostiles = Game.spawns['SpawnOne'].room.find(FIND_HOSTILE_CREEPS);
-	if (hostiles.length > 0) {
-		const username = hostiles[0].owner.username;
-		Game.notify(`User ${username} spotted in room ${'W48S3'}`);
-		const towers = Game.spawns['SpawnOne'].room.find(
-			FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
-		towers.forEach(tower => tower.attack(hostiles[0]));
+		const allStructures = Game.spawns['SpawnOne'].room.find(FIND_STRUCTURES);
+		let emptyWalls = [];
+		let emptyRamparts = [];
+		let emptyRoads = [];
+		let towers = [];
+
+		allStructures.forEach((structure) => {
+
+			if ((structure.structureType === 'rampart') && (structure.hits < 600000)) {
+				emptyRamparts.push(structure);
+			} else if ((structure.structureType === 'constructedWall') && (structure.hits < 600000)) {
+				emptyWalls.push(structure);
+			} else if ((structure.structureType === 'road') && (structure.hits < structure.hitsMax)) {
+				emptyRoads.push(structure);
+			} else if (structure.structureType === 'tower') {
+				towers.push(structure);
+			}
+		});
+
+		// all empty structures
+		const allRepairStructures = emptyWalls.concat(emptyRamparts, emptyRoads);
+		// console.log('W49S3 need to repair ' + allRepairStructures.length + ' structures');
+
+		if (allRepairStructures.length) {
+			towers.forEach(tower => tower.repair(allRepairStructures[0]));
+		}
 	}
 };
 
-// towers repair structures
-const towersRepairStructures = () => {
-	const hostiles = Game.spawns['SpawnOne'].room.find(FIND_HOSTILE_CREEPS);
-	if (hostiles.length === 0) {
-		// all roads
-		const roads = Game.spawns['SpawnOne'].room.find(FIND_STRUCTURES, {
-			filter: { structureType: STRUCTURE_ROAD }
+const towersRepairAndDefendW49S3 = () => {
+	const towers = _.filter(Game.spawns['SpawnW49S3'].room.find(FIND_MY_STRUCTURES), { 'structureType': STRUCTURE_TOWER });
+	const firstTower = towers[0];
+	const secondTower = towers[1];
+	const hostiles = secondTower.pos.findInRange(FIND_HOSTILE_CREEPS, 14);
+	const invader = secondTower.pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+		filter: { owner: { username: 'Invader' } }
+	}) || [];
+	const allHostiles = hostiles.concat(invader);
+	const hasHostiles = allHostiles.length;
+
+	if (hasHostiles) {
+
+		towers.forEach(tower => tower.attack(allHostiles[0]));
+
+	} else if (!hasHostiles) {
+
+		const allStructures = Game.spawns['SpawnW49S3'].room.find(FIND_STRUCTURES);
+		let emptyWalls = [];
+		let emptyRamparts = [];
+		let emptyRoads = [];
+		let towers = [];
+
+		allStructures.forEach((structure) => {
+
+			if ((structure.structureType === 'rampart') && (structure.hits < 1011000)) {
+				emptyRamparts.push(structure);
+			} else if ((structure.structureType === 'constructedWall') && (structure.hits < 1000000)) {
+				emptyWalls.push(structure);
+			} else if ((structure.structureType === 'road') && (structure.hits < structure.hitsMax)) {
+				emptyRoads.push(structure);
+			} else if (structure.structureType === 'tower') {
+				towers.push(structure);
+			}
 		});
 
-		const roadNeedToRepair = roads.find((object) => object.hits < object.hitsMax)
+		// all empty structures
+		const allRepairStructures = emptyRamparts.concat(emptyWalls, emptyRoads);
+		// console.log('W49S3 need to repair ' + allRepairStructures.length + ' structures');
 
-		const towers = Game.spawns['SpawnOne'].room.find(
-			FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
-		towers.forEach(tower => tower.repair(roadNeedToRepair));
+		if (allRepairStructures.length) {
+			towers.forEach(tower => tower.repair(allRepairStructures[0]));
+		}
 	}
 };
 
 // towers heal creeps
-const towersHealCreeps = () => {
-	const hostiles = Game.spawns['SpawnOne'].room.find(FIND_HOSTILE_CREEPS);
-	let damagedCreepsArr = [];
+// const towersHealCreeps = () => {
+// 	const hostiles = Game.spawns['SpawnOne'].room.find(FIND_HOSTILE_CREEPS);
+// 	let damagedCreepsArr = [];
 
-	if (hostiles.length === 0) {
-		for (let name in Game.creeps) {
-			let creep = Game.creeps[name];
-			if (creep.hits < creep.hitsMax) {
-				damagedCreepsArr.push(creep);
-			}
-		}
+// 	if (hostiles.length === 0) {
+// 		for (let name in Game.creeps) {
+// 			let creep = Game.creeps[name];
+// 			if (creep.hits < creep.hitsMax) {
+// 				damagedCreepsArr.push(creep);
+// 			}
+// 		}
 
-		if (damagedCreepsArr.length > 0) {
-			const towers = Game.spawns['SpawnOne'].room.find(
-				FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
-			towers.forEach(tower => tower.heal(damagedCreepsArr[0]));
-		}
-	}
-};
+// 		if (damagedCreepsArr.length > 0) {
+// 			const towers = Game.spawns['SpawnOne'].room.find(
+// 				FIND_MY_STRUCTURES, { filter: { structureType: STRUCTURE_TOWER } });
+// 			towers.forEach(tower => tower.heal(damagedCreepsArr[0]));
+// 		}
+// 	}
+// };
 
 // link transfer energy to another link
 const linkTransferEnergy = () => {
 	const linkFrom = Game.rooms['W48S3'].lookForAt('structure', 41, 43)[0];
-	const linkTo = Game.rooms['W48S3'].lookForAt('structure', 20, 34)[0];
+	// const linkFrom2 = Game.rooms['W48S3'].lookForAt('structure', 10, 2)[0];
+	const linkTo = Game.rooms['W48S3'].lookForAt('structure', 12, 32)[0];
+	const linkFromW49S3 = Game.rooms['W49S3'].lookForAt('structure', 20, 8)[0];
+	const linkToW49S3 = Game.rooms['W49S3'].lookForAt('structure', 11, 25)[0];
 	// console.log(linkTo)
 	if (linkTo.store[RESOURCE_ENERGY] < 799) {
 		linkFrom.transferEnergy(linkTo);
 	}
+	if (linkTo.store[RESOURCE_ENERGY] < 799) {
+		// linkFrom2.transferEnergy(linkTo);
+	}
+	if (linkToW49S3.store[RESOURCE_ENERGY] < 799) {
+		linkFromW49S3.transferEnergy(linkToW49S3);
+	}
 };
 
+// send creep to W49S3 if undefined
+const sendW49S3FinderCreep = () => {
+	if (Game.creeps['W49S3Finder']) {
+		Game.creeps['W49S3Finder'].moveTo(Game.flags.FlagW49S3Wait);
+	}
+};
 
 // // check if extensions empty or full
 // const isExtensionsEmpty = () => {
