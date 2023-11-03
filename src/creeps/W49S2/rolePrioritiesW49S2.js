@@ -9,7 +9,7 @@ import { hasConstructionSites } from '../../hooks/constructions/hasConstructionS
 import { hasEmptyTowers } from '../../hooks/constructions/hasEmptyTowers';
 import { hasEmptyExtensions } from '../../hooks/constructions/hasEmptyExtensions';
 
-import { fillExtensions } from '../../hooks/creeps/roles/fillExtensions';
+import { fillExtension } from '../../hooks/creeps/roles/fillExtension';
 import { fillTower } from '../../hooks/creeps/roles/fillTower';
 
 export const rolePrioritiesW49S2 = (creep) => {
@@ -132,8 +132,8 @@ export const rolePrioritiesW49S2 = (creep) => {
     } else if (!creepRoleHarvest && (creepResourceEnergy > 0)) {
 
       if (emptyExtensions) {
-        creep.memory.role = 'fillExtensions';
-        fillExtensions(creep, emptyExtensions);
+        creep.memory.role = 'fillExtension';
+        fillExtension(creep, emptyExtensions);
       } else if (!emptyExtensions && emptySpawn) {
         creep.memory.role = 'fillSpawn';
         // fillSpawn(creep);
