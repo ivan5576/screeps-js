@@ -1,20 +1,29 @@
 export const harvest = (creep, gameRoomObj, flagWhenRoomUndef) => {
-  if ((creep !== undefined) && (gameRoomObj !== undefined)) {
-    const nearestfilledSources = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
-    if ((creep.store.getFreeCapacity() > 0) && nearestfilledSources) {
-      if (creep.harvest(nearestfilledSources) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(nearestfilledSources);
+  const creepNotUndef = creep !== undefined;
+  const gameRoomObjNotUndef = gameRoomObj !== undefined;
+  const flagNotUndef = flagWhenRoomUndef !== undefined;
+  const creepEmpty = creepNotUndef ? creep.store.getFreeCapacity() > 0 : null;
+  const creepAlmostFull = creepNotUndef ? creep.store.getCapacity() > 100 : null;
+  const creepFull = creepNotUndef ? creep.store.getFreeCapacity() === 0 : null;
+
+  if (creepNotUndef && gameRoomObjNotUndef) {
+    const creepInTargetRoom = creep.pos.roomName === gameRoomObj.name;
+
+    if (creepInTargetRoom) {
+      const nearestfilledSource = creep.pos.findClosestByRange(FIND_SOURCES_ACTIVE);
+
+      if (creepEmpty && nearestfilledSource) {
+        if (creep.harvest(nearestfilledSource) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(nearestfilledSource);
+        }
+      } else if ((creepAlmostFull && !nearestfilledSource) || creepFull) {
+        creep.memory.role = 'goToNextTask';
       }
 
-    } else if ((creep.store.getCapacity() > 100) && !nearestfilledSources) {
-      creep.memory.role = 'goToNextTask';
+    } else if (!creepInTargetRoom && flagNotUndef) {
+      creep.moveTo(flagWhenRoomUndef);
 
-    } else if (creep.store.getFreeCapacity() === 0) {
-      creep.memory.role = 'goToNextTask';
-    }
-
-  } else if ((gameRoomObj === undefined) && (flagWhenRoomUndef !== undefined)) {
-    creep.moveTo(flagWhenRoomUndef);
+    } else return null;
 
   } else return null;
 

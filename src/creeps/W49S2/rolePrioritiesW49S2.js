@@ -1,16 +1,18 @@
-import { harvest } from '../../hooks/creeps/roles/harvest';
 import { attack } from './role/attack';
 import { claim } from './role/claim';
-import { upgrade } from './role/upgrade';
 import { wait } from './role/wait';
+import { harvest } from '../../hooks/creeps/roles/harvest';
 import { build } from '../../hooks/creeps/roles/build';
+import { upgrade } from '../../hooks/creeps/roles/upgrade';
+import { fillSpawn } from '../../hooks/creeps/roles/fillSpawn';
+import { fillExtension } from '../../hooks/creeps/roles/fillExtension';
+import { fillTower } from '../../hooks/creeps/roles/fillTower';
+import { fillStorage } from '../W48S3/role/fillStorage';
 
 import { hasConstructionSites } from '../../hooks/constructions/hasConstructionSites';
 import { hasEmptyTowers } from '../../hooks/constructions/hasEmptyTowers';
 import { hasEmptyExtensions } from '../../hooks/constructions/hasEmptyExtensions';
-
-import { fillExtension } from '../../hooks/creeps/roles/fillExtension';
-import { fillTower } from '../../hooks/creeps/roles/fillTower';
+import { hasEmptyStorage } from '../../hooks/constructions/hasEmptyStorage';
 
 export const rolePrioritiesW49S2 = (creep) => {
 
@@ -40,15 +42,10 @@ export const rolePrioritiesW49S2 = (creep) => {
 
   // spawn
   const gameSpawnW49S2 = Game.spawns['SpawnW49S2'] || null;
-  // const emptySpawn = gameSpawnW49S2 ? gameSpawnW49S2.store.getFreeCapacity(RESOURCE_ENERGY) > 0 : null;
-  const emptySpawn = false;
-
-  // Game.spawns.filter(spawn => spawn.r)
+  const emptySpawn = gameSpawnW49S2 ? gameSpawnW49S2.store.getFreeCapacity(RESOURCE_ENERGY) > 0 : null;
 
   // storage
-  const isStorageExist = gameW49S2 ? Game.rooms.W49S2.storage !== undefined : null;
-  const storage = isStorageExist ? gameSpawnW49S2.storage : null;
-  const emptyStorage = storage ? storage.store.getFreeCapacity(RESOURCE_ENERGY) === 0 : null;
+  const emptyStorage = gameW49S2 ? hasEmptyStorage(gameW49S2) : null;
 
   // extensions
   const extensions = gameW49S2 ? (_.filter(gameW49S2.find(FIND_MY_STRUCTURES), { 'structureType': STRUCTURE_EXTENSION })) : null;
@@ -60,9 +57,13 @@ export const rolePrioritiesW49S2 = (creep) => {
   const towersRepairAndDefendW48S2 = (gameRoomObj) => {
     const towers = _.filter(gameRoomObj.find(FIND_MY_STRUCTURES), { 'structureType': STRUCTURE_TOWER });
 
+    const playerAttackIgnore = ['nrei'];
+    const hostilesIgnoreNrei = creep.room.find(FIND_HOSTILE_CREEPS)
+      .filter((hostileCreep) => playerAttackIgnore.indexOf(hostileCreep.owner.username) === -1);
+
     if (towers.length > 0) {
-      const hostiles = towers[0].pos.findInRange(FIND_HOSTILE_CREEPS, 14);
-      const invader = towers[0].pos.findClosestByRange(FIND_HOSTILE_CREEPS, {
+      const hostiles = towers[0].pos.findInRange(hostilesIgnoreNrei, 14);
+      const invader = towers[0].pos.findClosestByRange(hostilesIgnoreNrei, {
         filter: { owner: { username: 'Invader' } }
       }) || [];
       const allHostiles = hostiles.concat(invader);
@@ -136,7 +137,7 @@ export const rolePrioritiesW49S2 = (creep) => {
         fillExtension(creep, emptyExtensions);
       } else if (!emptyExtensions && emptySpawn) {
         creep.memory.role = 'fillSpawn';
-        // fillSpawn(creep);
+        fillSpawn(creep, gameSpawnW49S2);
       } else if (!emptyExtensions && !emptySpawn && emptyTowers) {
         creep.memory.role = 'fillTower';
         fillTower(creep, emptyTowers);
@@ -145,7 +146,7 @@ export const rolePrioritiesW49S2 = (creep) => {
         build(creep, constructionSites);
       } else if (!emptyExtensions && !emptySpawn && !emptyTowers && !constructionSites && emptyStorage) {
         creep.memory.role = 'fillStorage';
-        // fillStorage(creep);
+        fillStorage(creep);
       } else if (!emptyExtensions && !emptySpawn && !emptyTowers && !constructionSites && !emptyStorage) {
         creep.memory.role = 'upgrade';
         upgrade(creep);
