@@ -9,18 +9,21 @@ import { fillExtension } from '../../hooks/creeps/roles/fillExtension';
 import { fillTower } from '../../hooks/creeps/roles/fillTower';
 import { fillStorage } from '../W48S3/role/fillStorage';
 
-import { hasConstructionSites } from '../../hooks/constructions/hasConstructionSites';
-import { hasEmptyTowers } from '../../hooks/constructions/hasEmptyTowers';
-import { hasEmptyExtensions } from '../../hooks/constructions/hasEmptyExtensions';
-import { hasEmptyStorage } from '../../hooks/constructions/hasEmptyStorage';
+import { hasConstructionSites } from '../../hooks/constructions/checkEmptyOrExist/hasConstructionSites';
+import { hasEmptyTowers } from '../../hooks/constructions/checkEmptyOrExist/hasEmptyTowers';
+import { hasEmptyExtensions } from '../../hooks/constructions/checkEmptyOrExist/hasEmptyExtensions';
+import { hasEmptyStorage } from '../../hooks/constructions/checkEmptyOrExist/hasEmptyStorage';
 
-export const rolePrioritiesW49S2 = (creep) => {
+export const rolePrioritiesW49S2 = (creep, gameRoomObj) => {
+
+  // sources
+  const sources = gameRoomObj.find(FIND_SOURCES);
+  const sourceForUpgrade = sources[1]; // temporary hardcode!!!
 
   // flags
   const flagW49S2 = Game.flags.GatherPoint;
 
   // creeps
-
   const creepGlobalRoleWaiter = creep.memory.globalRole === 'waiter';
   const creepGlobalRoleClaimer = creep.memory.globalRole === 'claimer';
   const creepGlobalRoleAttackerLight = creep.memory.globalRole === 'attackerLight';
@@ -28,7 +31,13 @@ export const rolePrioritiesW49S2 = (creep) => {
   // const creepGlobalUpgrader = creep.memory.globalRole === 'upgrader';
   // const creepGlobalRoleFillerTower = creep.memory.globalRole === 'fillerTower';
 
-  const creepRoleHarvest = creep.memory.role === 'harvestW49S2';
+  const globalRoleTowerKeeper = creepGlobalRole === 'towerKeeper';
+  const globalRoleHarvester = creepGlobalRole === 'harvester';
+  const globalRoleUpgrader1 = creepGlobalRole === 'upgrader1';
+  const globalRoleUpgrader2 = creepGlobalRole === 'upgrader2';
+  const globalRoleharvesterW49S2 = creepGlobalRole === 'harvesterW49S2'; // temporary hardcode!!!
+
+  const creepRoleHarvest = creep.memory.role === 'harvest';
   const creepResourceEnergy = creep.store[RESOURCE_ENERGY];
   const creepFreeCapacity = creep.store.getFreeCapacity();
 
@@ -83,9 +92,9 @@ export const rolePrioritiesW49S2 = (creep) => {
 
         allStructures.forEach((structure) => {
 
-          if ((structure.structureType === 'rampart') && (structure.hits < 600000)) {
+          if ((structure.structureType === 'rampart') && (structure.hits < 300000)) {
             emptyRamparts.push(structure);
-          } else if ((structure.structureType === 'constructedWall') && (structure.hits < 600000)) {
+          } else if ((structure.structureType === 'constructedWall') && (structure.hits < 300000)) {
             emptyWalls.push(structure);
           } else if ((structure.structureType === 'road') && (structure.hits < structure.hitsMax)) {
             emptyRoads.push(structure);
@@ -109,11 +118,9 @@ export const rolePrioritiesW49S2 = (creep) => {
   towersRepairAndDefendW48S2(gameW49S2);
 
   // links
-  // const linkFrom = Game.rooms['W49S3'].lookForAt('structure', 20, 8)[0];
-  // const linkTo = Game.rooms['W49S3'].lookForAt('structure', 11, 25)[0];
-  // const emptyLinkFrom = linkFrom.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
-  // const emptyLinkTo = linkTo.store[RESOURCE_ENERGY] == 0;
-
+  const links = _.filter(gameRoomObj.find(FIND_MY_STRUCTURES), { 'structureType': STRUCTURE_LINK });
+  const linkFrom = links[0]; // temporary hardcode!!!
+  const linkTo = links[1]; // temporary hardcode!!!
 
   if (creepGlobalRoleWaiter) {
     creep.memory.role = 'wait';
@@ -124,12 +131,11 @@ export const rolePrioritiesW49S2 = (creep) => {
   } else if (creepGlobalRoleHarvester) {
 
     if (!creepRoleHarvest && (creepResourceEnergy === 0)) {
-      creep.memory.role = 'harvestW49S2';
-      harvest(creep, gameW49S2, flagW49S2);
+      creep.memory.role = 'harvest';
+    } else if (creepRoleHarvest && (creepFreeCapacity > 0)) {
+      harvest(creep, gameW49S2, flagW49S2, sourceForUpgrade, linkTo);
     } else if (creepRoleHarvest && (creepFreeCapacity === 0)) {
       creep.memory.role = 'fillExtensions';
-    } else if (creepRoleHarvest && (creepFreeCapacity > 0)) {
-      harvest(creep, gameW49S2, flagW49S2);
     } else if (!creepRoleHarvest && (creepResourceEnergy > 0)) {
 
       if (emptyExtensions) {
@@ -144,18 +150,22 @@ export const rolePrioritiesW49S2 = (creep) => {
       } else if (!emptyExtensions && !emptySpawn && !emptyTowers && constructionSites) {
         creep.memory.role = 'build';
         build(creep, constructionSites);
-      } else if (!emptyExtensions && !emptySpawn && !emptyTowers && !constructionSites && emptyStorage) {
-        creep.memory.role = 'fillStorage';
-        fillStorage(creep);
-      } else if (!emptyExtensions && !emptySpawn && !emptyTowers && !constructionSites && !emptyStorage) {
+        // } else if (!emptyExtensions && !emptySpawn && !emptyTowers && !constructionSites && emptyStorage) {
+        //   creep.memory.role = 'fillStorage';
+        //   fillStorage(creep, emptyStorage);
+      } else if (!emptyExtensions && !emptySpawn && !emptyTowers && !constructionSites) {
         creep.memory.role = 'upgrade';
         upgrade(creep);
       }
 
     }
 
-  } else if (creepGlobalRoleClaimer) {
+  } else if () {
+
+
+
+  }
+  else if (creepGlobalRoleClaimer) {
     claim(creep);
   }
-
 };

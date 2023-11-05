@@ -1,16 +1,19 @@
 import { ErrorMapper } from './util/errorMapper';
 import { logger } from './util/logger';
 
-import { clearMemoryCreeps } from './memory/clearMemoryCreeps';
+import { clearMemory } from './memory/clearMemory';
+import { writeToMemory } from './memory/writeToMemory';
 import { countCreepsW48S3 } from './memory/countCreepsW48S3';
 import { countCreepsW49S3 } from './memory/countCreepsW49S3';
-import { countCreepsW49S2 } from './memory/countCreepsW49S2';
 
 import { spawnNewCreeps } from './creeps/W48S3/spawningCreeps';
+
 import { spawnCreepsW49S3 } from './creeps/W49S3/spawnCreepsW49S3';
 import { rolePrioritiesW48S3 } from './creeps/W48S3/rolePrioritiesW48S3';
 import { rolePrioritiesW49S3 } from './creeps/W49S3/rolePrioritiesW49S3';
 import { rolePrioritiesW49S2 } from './creeps/W49S2/rolePrioritiesW49S2';
+import { spawnCreep } from './hooks/creeps/spawning/spawnCreep';
+import { countCreepsW49S2 } from './memory/countCreepsW49S2';
 // import { roleReserveController } from './creeps/W48S2/role/roleReserveController';
 
 global.logger = logger;
@@ -25,10 +28,14 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
 	// console.log(`Current game tick is ${Game.time}`);
 
-	clearMemoryCreeps();
+	clearMemory();
 	countCreepsW48S3();
 	countCreepsW49S3();
 	countCreepsW49S2();
+
+	// writeToMemory(Game.rooms.W49S2);
+	// spawnCreep(Game.rooms.W49S2);
+
 	spawnNewCreeps();
 	spawnCreepsW49S3();
 	towersRepairAndDefendW48S3();

@@ -61,7 +61,7 @@ export const spawnNewCreeps = () => {
     } else if (!upgrader) {
 
       console.log('SpawnOne create Upgrader!');
-      Game.spawns['SpawnOne'].spawnCreep([WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], upgraderCreepW48S3, { memory: { globalRole: 'upgrader', role: 'harvestLink', body: 'Upgrader', targetRoom: 'W48S3', } });
+      Game.spawns['SpawnOne'].spawnCreep([WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], upgraderCreepW48S3, { memory: { globalRole: 'upgrader', role: 'harvestLink', body: 'Upgrader', targetRoom: 'W48S3', } });
 
     } else if (!fillerTower) {
 

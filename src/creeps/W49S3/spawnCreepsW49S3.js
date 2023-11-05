@@ -2,6 +2,8 @@
 
 export const spawnCreepsW49S3 = () => {
 
+  const timeOfbirth = Game.time;
+
   // creeps W49S3
   const harvesterName = 'Harvester-W49S3-' + Game.time.toString().slice(4);
   const harvesterToLinkName = 'HarvesterToLink-W49S3-' + Game.time.toString().slice(4);
@@ -85,7 +87,7 @@ export const spawnCreepsW49S3 = () => {
 
       console.log('SpawnW49S3 create Harvester sourceTwo!');
       Game.spawns['SpawnW49S3'].spawnCreep(
-        [WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], harvesterName,
+        [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], harvesterName,
         {
           memory: {
             globalRole: 'harvester',
@@ -109,6 +111,7 @@ export const spawnCreepsW49S3 = () => {
             body: 'Harvester',
             targetRoom: 'W49S3',
             source: 'sourceOne',
+            timeOfbirth: timeOfbirth,
           }
         }
       );
@@ -166,7 +169,7 @@ export const spawnCreepsW49S3 = () => {
             }
           }
         );
-      } else if (harvesterW49S2 < 2) {
+      } else if (harvesterW49S2 && false) {
         Game.spawns['SpawnW49S3'].spawnCreep(
           [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], harvesterW49S2Name,
           {
