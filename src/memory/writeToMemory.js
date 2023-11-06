@@ -50,8 +50,8 @@ export const writeToMemory = (gameRoomObj) => {
           rolesObj[creepRole]++;
         }
 
-        if (typeof bornTimeObj[creepBornTime] === 'number') {
-          bornTimeObj[creepBornTime] = creepBornTime;
+        if (typeof bornTimeObj[creepGlobalRole] === 'number') {
+          bornTimeObj[creepGlobalRole] = creepBornTime;
         }
 
       }

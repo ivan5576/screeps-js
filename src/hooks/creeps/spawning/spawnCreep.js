@@ -1,108 +1,108 @@
+import { logger } from "../../../util/logger";
 import { TOWERKEEPER, HARVESTER, UPGRADER1, UPGRADER2 } from "./constants";
 
-export const spawnCreep = (gameRoomObj) => {
+// First prop is a target Game.rooms obj (ex.: Game.rooms.W48S3).
+// If you want to spawn creeps in other room - put name of this room in second prop (ex.: 'W49S2'),
+// if second prop is empty - spawn room will be the same as target room.
+
+export const spawnCreep = (gameRoomObj, spawnRoomName) => {
+
   if (gameRoomObj) {
 
-    const spawns = gameRoomObj.spawns.length !== 0 ? gameRoomObj.spawns : null;
+    const targetRoomName = gameRoomObj.name;
+    spawnRoomName = spawnRoomName === undefined ? gameRoomObj.name : spawnRoomName;
+    const spawns = Game.spawns;
+    const freeSpawn = Object.values(spawns).find(spawn => (spawn.room.name === spawnRoomName) && (spawn.spawning === null)) || null;
 
-    if (spawns) {
+    if (freeSpawn) {
 
-      const filterSpawnsNotSpawning = spawns.filter(spawn => !spawn.spawning);
-      const freeSpawns = filterSpawnsNotSpawning.length !== 0 ? filterSpawnsNotSpawning : null;
+      // creep name
+      const towerKeeperName = 'towerKeeper' + Game.time.toString().slice(4);
+      const harvesterName = 'harvester' + Game.time.toString().slice(4);
+      const upgrader1Name = 'upgrader1' + Game.time.toString().slice(4);
+      const upgrader2Name = 'upgrader2' + Game.time.toString().slice(4);
 
-      if (freeSpawns) {
+      // creep global role
+      const towerKeeper = Memory.rooms[targetRoomName].globalRole.towerKeeper;
+      const harvester = Memory.rooms[targetRoomName].globalRole.harvester;
+      const upgrader1 = Memory.rooms[targetRoomName].globalRole.upgrader1;
+      const upgrader2 = Memory.rooms[targetRoomName].globalRole.upgrader2;
 
-        const roomName = gameRoomObj.name;
+      // creep lifetime
+      const bornTime = Game.time;
+      const currTime = Game.time;
+      const towerKeeperBornTime = (currTime - Memory.rooms[targetRoomName].bornTime.towerKeeper) > 1400;
+      const harvesterBornTime = (currTime - Memory.rooms[targetRoomName].bornTime.harvester) > 1400;
+      const upgrader1BornTime = (currTime - Memory.rooms[targetRoomName].bornTime.upgrader1) > 1400;
+      const upgrader2BornTime = (currTime - Memory.rooms[targetRoomName].bornTime.upgrader2) > 1400;
 
-        // creep name
-        const towerKeeperName = 'towerKeeper' + Game.time.toString().slice(4);
-        const harvesterName = 'harvester' + Game.time.toString().slice(4);
-        const upgrader1Name = 'upgrader1' + Game.time.toString().slice(4);
-        const upgrader2Name = 'upgrader2' + Game.time.toString().slice(4);
+      // enough energy for spawn
+      const energyForSpawning = Game.rooms[spawnRoomName].energyAvailable;
+      const towerKeeperEnoughEnergy = energyForSpawning >= TOWERKEEPER.coast;
+      const harvesterEnoughEnergy = energyForSpawning >= HARVESTER.coast;
+      const upgrader1EnoughEnergy = energyForSpawning >= UPGRADER1.coast;
+      const upgrader2EnoughEnergy = energyForSpawning >= UPGRADER2.coast;
 
-        // creep global role
-        const towerKeeper = Memory.rooms[roomName].globalRole.towerKeeper;
-        const harvester = Memory.rooms[roomName].globalRole.harvester;
-        const upgrader1 = Memory.rooms[roomName].globalRole.upgrader1;
-        const upgrader2 = Memory.rooms[roomName].globalRole.upgrader2;
+      if ((!towerKeeper || towerKeeperBornTime) && towerKeeperEnoughEnergy) {
 
-        // creep lifetime
-        const bornTime = Memory.creeps[roomName].bornTime;
-        const currTime = Game.time;
-        const towerKeeperBornTime = (currTime - Memory.rooms[roomName].bornTime.towerKeeper) > 1400;
-        const harvesterBornTime = (currTime - Memory.rooms[roomName].bornTime.harvester) > 1400;
-        const upgrader1BornTime = (currTime - Memory.rooms[roomName].bornTime.upgrader1) > 1400;
-        const upgrader2BornTime = (currTime - Memory.rooms[roomName].bornTime.upgrader2) > 1400;
-
-        // enough energy for spawn
-        const energyForSpawning = gameRoomObj.energyAvailable;
-        const towerKeeperEnoughEnergy = energyForSpawning >= TOWERKEEPER.coast;
-        const harvesterEnoughEnergy = energyForSpawning >= HARVESTER.coast;
-        const upgrader1EnoughEnergy = energyForSpawning >= UPGRADER1.coast;
-        const upgrader2EnoughEnergy = energyForSpawning >= UPGRADER2.coast;
-
-        if ((!towerKeeper || towerKeeperBornTime) && towerKeeperEnoughEnergy) {
-
-          freeSpawns[0].spawnCreep(
-            TOWERKEEPER.body,
-            towerKeeperName,
-            {
-              memory: {
-                globalRole: 'towerKeeper',
-                role: 'harvestStorage',
-                targetRoom: roomName,
-                bornTime: bornTime,
-              }
+        freeSpawn.spawnCreep(
+          TOWERKEEPER.body,
+          towerKeeperName,
+          {
+            memory: {
+              globalRole: 'towerKeeper',
+              role: 'harvest',
+              targetRoom: targetRoomName,
+              bornTime: bornTime,
             }
-          );
+          }
+        );
 
-        } else if ((!harvester || harvesterBornTime) && harvesterEnoughEnergy) {
+      } else if ((!harvester || harvesterBornTime) && harvesterEnoughEnergy) {
 
-          freeSpawns[0].spawnCreep(
-            HARVESTER.body, harvesterName,
-            {
-              memory: {
-                globalRole: 'harvester',
-                role: 'harvest',
-                targetRoom: roomName,
-                bornTime: bornTime,
-              }
+        freeSpawn.spawnCreep(
+          HARVESTER.body, harvesterName,
+          {
+            memory: {
+              globalRole: 'harvester',
+              role: 'harvest',
+              targetRoom: targetRoomName,
+              bornTime: bornTime,
             }
-          );
+          }
+        );
 
-        } else if ((!upgrader1 || upgrader1BornTime) && upgrader1EnoughEnergy && towerKeeper && harvester) {
+      } else if ((!upgrader1 || upgrader1BornTime) && upgrader1EnoughEnergy && towerKeeper && harvester) {
 
-          freeSpawns[0].spawnCreep(
-            UPGRADER1.body, upgrader1Name,
-            {
-              memory: {
-                globalRole: 'upgrader1',
-                role: 'harvest',
-                targetRoom: roomName,
-                bornTime: bornTime,
-              }
+        freeSpawn.spawnCreep(
+          UPGRADER1.body, upgrader1Name,
+          {
+            memory: {
+              globalRole: 'upgrader1',
+              role: 'harvest',
+              targetRoom: targetRoomName,
+              bornTime: bornTime,
             }
-          );
+          }
+        );
 
-        } else if ((!upgrader2 || upgrader2BornTime) && upgrader2EnoughEnergy && towerKeeper && harvester) {
+      } else if ((!upgrader2 || upgrader2BornTime) && upgrader2EnoughEnergy && towerKeeper && harvester) {
 
-          freeSpawns[0].spawnCreep(
-            UPGRADER2.body, upgrader2Name,
-            {
-              memory: {
-                globalRole: 'upgrader2',
-                role: 'harvest',
-                targetRoom: roomName,
-                bornTime: bornTime,
-              }
+        freeSpawn.spawnCreep(
+          UPGRADER2.body, upgrader2Name,
+          {
+            memory: {
+              globalRole: 'upgrader2',
+              role: 'harvest',
+              targetRoom: targetRoomName,
+              bornTime: bornTime,
             }
-          );
-
-        }
+          }
+        );
 
       }
 
-    } else return null;
+    }
 
   } else return null;
 };

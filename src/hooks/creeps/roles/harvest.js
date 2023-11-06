@@ -1,3 +1,5 @@
+import { findSoonActiveSource } from "../../room/findSoonActiveSource";
+
 export const harvest = (creep, gameRoomObj, flagWhenRoomUndef, sourceForUpgrade, linkTo) => {
 
   if (creep && gameRoomObj) {
@@ -51,7 +53,7 @@ export const harvest = (creep, gameRoomObj, flagWhenRoomUndef, sourceForUpgrade,
           creep.memory.role = 'goToNextTask';
 
         } else if (creepEmpty && !closestActiveSource) {
-          const soonActiveSource = findSoonActiveSource();
+          const soonActiveSource = findSoonActiveSource(creep);
           if (soonActiveSource) {
             creep.moveTo(soonActiveSource);
           }
@@ -72,7 +74,7 @@ export const harvest = (creep, gameRoomObj, flagWhenRoomUndef, sourceForUpgrade,
 
       } else if (globalRoleUpgrader2) {
 
-        if (linkTo && (linkTo.length > 0) && (linkTo.structureType === 'link')) {
+        if (linkTo && (linkTo.structureType === 'link')) {
 
           const linkToHasEnergy = linkTo.store[RESOURCE_ENERGY] > 0;
 
@@ -94,25 +96,5 @@ export const harvest = (creep, gameRoomObj, flagWhenRoomUndef, sourceForUpgrade,
 
     } else return null;
   } else return null;
-
-  const findSoonActiveSource = () => {
-    const ticksToRegeneration = [];
-    const sources = creep.pos.find(FIND_SOURCES);
-    sources.forEach(source => ticksToRegeneration.push(source.ticksToRegeneration));
-
-    const findIdxSource = () => {
-      let minNum = Infinity;
-      let idxOfMinNum = -1;
-
-      for (let i = 0; i < ticksToRegeneration.length; i++) {
-        if (ticksToRegeneration[i] < minNum) {
-          minNum = ticksToRegeneration[i];
-          idxOfMinNum = i;
-        }
-      }
-      return idxOfMinNum;
-    }
-    return findIdxSource() !== -1 ? sources[findIdxSource()] : null;
-  }
 
 };

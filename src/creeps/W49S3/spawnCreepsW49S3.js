@@ -55,7 +55,7 @@ export const spawnCreepsW49S3 = () => {
 
       console.log('SpawnW49S3 create HarvesterToLink sourceOne!');
       Game.spawns['SpawnW49S3'].spawnCreep(
-        [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], harvesterToLinkName,
+        [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], harvesterToLinkName,
         {
           memory: {
             globalRole: 'harvesterToLink',
@@ -103,7 +103,7 @@ export const spawnCreepsW49S3 = () => {
 
       console.log('SpawnW49S3 create Harvester sourceOne!');
       Game.spawns['SpawnW49S3'].spawnCreep(
-        [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], 'Harvester-W49S3-' + harvesterName,
+        [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], harvesterName,
         {
           memory: {
             globalRole: 'harvester',
