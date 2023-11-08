@@ -24,6 +24,7 @@ export const writeToMemory = (gameRoomObj) => {
       harvester: 0,
       upgrader1: 0,
       upgrader2: 0,
+      remoteHarvester: 0,
     };
 
     let bornTimeObj = {
@@ -31,6 +32,7 @@ export const writeToMemory = (gameRoomObj) => {
       harvester: 0,
       upgrader1: 0,
       upgrader2: 0,
+      remoteHarvester: 0,
     }
 
     for (let name in Memory.creeps) {

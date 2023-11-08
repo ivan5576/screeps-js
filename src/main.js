@@ -55,7 +55,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 		else if (Memory.creeps[name].targetRoom == 'W49S3') {
 			rolePrioritiesW49S3(creep);
 		} else if (Memory.creeps[name].targetRoom == 'W49S2') {
-			rolePriorities(creep, Game.rooms.W49S2, Game.flags.GatherPoint);
+			rolePriorities(creep, Game.rooms.W49S2, Game.flags.GatherPoint, Game.flags.flagW49S1Source);
 		}
 	}
 
