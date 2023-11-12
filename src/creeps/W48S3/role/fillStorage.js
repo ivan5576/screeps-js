@@ -1,9 +1,9 @@
-export const fillStorage = (creep, emptyStorage) => {
+export const fillStorage = (creep) => {
   const creepNotUndef = creep !== undefined;
 
-  if (creepNotUndef && emptyStorage) {
-    if (creep.transfer(emptyStorage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-      creep.moveTo(emptyStorage);
+  if (creepNotUndef) {
+    if (creep.transfer(Game.rooms.W48S3.storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      creep.moveTo(Game.rooms.W48S3.storage);
     }
   } else return null;
 };

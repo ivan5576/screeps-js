@@ -55,7 +55,7 @@ export const spawnCreepsW49S3 = () => {
 
       console.log('SpawnW49S3 create HarvesterToLink sourceOne!');
       Game.spawns['SpawnW49S3'].spawnCreep(
-        [WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], harvesterToLinkName,
+        [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], harvesterToLinkName,
         {
           memory: {
             globalRole: 'harvesterToLink',
@@ -72,7 +72,7 @@ export const spawnCreepsW49S3 = () => {
 
       console.log('SpawnW49S3 create Upgrader sourceOne!');
       Game.spawns['SpawnW49S3'].spawnCreep(
-        [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE], upgraderName,
+        [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], upgraderName,
         {
           memory: {
             globalRole: 'upgrader',
@@ -83,11 +83,11 @@ export const spawnCreepsW49S3 = () => {
         }
       );
 
-    } else if ((harvester < 2) && (Memory.rooms.W49S3.source['sourceTwo'] < 1)) {
+    } else if (!harvester && (Memory.rooms.W49S3.source['sourceTwo'] < 1)) {
 
       console.log('SpawnW49S3 create Harvester sourceTwo!');
       Game.spawns['SpawnW49S3'].spawnCreep(
-        [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], harvesterName,
+        [WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], harvesterName,
         {
           memory: {
             globalRole: 'harvester',
@@ -99,22 +99,22 @@ export const spawnCreepsW49S3 = () => {
         }
       );
 
-    } else if ((harvester < 2) && (Memory.rooms.W49S3.source['sourceOne'] < 3)) {
+      // } else if ((harvester < 2) && (Memory.rooms.W49S3.source['sourceOne'] < 3)) {
 
-      console.log('SpawnW49S3 create Harvester sourceOne!');
-      Game.spawns['SpawnW49S3'].spawnCreep(
-        [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], harvesterName,
-        {
-          memory: {
-            globalRole: 'harvester',
-            role: 'harvest',
-            body: 'Harvester',
-            targetRoom: 'W49S3',
-            source: 'sourceOne',
-            timeOfbirth: timeOfbirth,
-          }
-        }
-      );
+      //   console.log('SpawnW49S3 create Harvester sourceOne!');
+      //   Game.spawns['SpawnW49S3'].spawnCreep(
+      //     [WORK, WORK, WORK, WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE, MOVE], harvesterName,
+      //     {
+      //       memory: {
+      //         globalRole: 'harvester',
+      //         role: 'harvest',
+      //         body: 'Harvester',
+      //         targetRoom: 'W49S3',
+      //         source: 'sourceOne',
+      //         timeOfbirth: timeOfbirth,
+      //       }
+      //     }
+      //   );
 
     } else if (!fillerTower) {
 

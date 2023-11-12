@@ -1,9 +1,9 @@
 import { logger } from "../../../util/logger";
 import { TOWERKEEPER, HARVESTER, UPGRADER1, UPGRADER2, REMOTEHARVESTER } from "./constants";
 
-// First prop is a target Game.rooms obj (ex.: Game.rooms.W48S3).
-// If you want to spawn creeps in other room - put name of this room in second prop (ex.: 'W49S2'),
-// if second prop is empty - spawn room will be the same as target room.
+// The first parameter represents the target room (e.g., Game.rooms.W48S3).
+// For spawning in a different room, use the second parameter as the room name (e.g., 'W49S2').
+// If empty, the spawning room is the same as the target room.
 
 export const spawnCreep = (gameRoomObj, spawnRoomName) => {
 
@@ -29,7 +29,6 @@ export const spawnCreep = (gameRoomObj, spawnRoomName) => {
       const upgrader1 = Memory.rooms[targetRoomName].globalRole.upgrader1;
       const upgrader2 = Memory.rooms[targetRoomName].globalRole.upgrader2;
       const remoteHarvester = Memory.rooms[targetRoomName].globalRole.remoteHarvester;
-
       // creep lifetime
       const bornTime = Game.time;
       const currTime = Game.time;
@@ -90,8 +89,8 @@ export const spawnCreep = (gameRoomObj, spawnRoomName) => {
           }
         );
 
-      } else if ((!upgrader2 || upgrader2BornTime) && upgrader2EnoughEnergy && towerKeeper && harvester) {
-
+      } else if (((upgrader2 < 2) || upgrader2BornTime) && upgrader2EnoughEnergy && towerKeeper && harvester) {
+        logger.info(upgrader2BornTime)
         freeSpawn.spawnCreep(
           UPGRADER2.body, upgrader2Name,
           {
@@ -104,7 +103,7 @@ export const spawnCreep = (gameRoomObj, spawnRoomName) => {
           }
         );
 
-      } else if ((!remoteHarvester || remoteHarvesterBornTime) && remoteHarvesterEnoughEnergy && towerKeeper && harvester && upgrader1 && upgrader2) {
+      } else if (((remoteHarvester < 2) || remoteHarvesterBornTime) && remoteHarvesterEnoughEnergy && towerKeeper && harvester && upgrader1 && upgrader2) {
 
         freeSpawn.spawnCreep(
           REMOTEHARVESTER.body, remoteHarvesterName,

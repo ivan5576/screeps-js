@@ -35,7 +35,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
 	countCreepsW48S3();
 	countCreepsW49S3();
 
-	spawnCreep(Game.rooms.W49S2, 'W49S3');
+	spawnCreep(Game.rooms.W49S2);
 
 	spawnNewCreeps();
 	spawnCreepsW49S3();
@@ -90,9 +90,9 @@ const towersRepairAndDefendW49S2 = (gameRoomObj) => {
 
 			allStructures.forEach((structure) => {
 
-				if ((structure.structureType === 'rampart') && (structure.hits < 300000)) {
+				if ((structure.structureType === 'rampart') && (structure.hits < 1000000)) {
 					emptyRamparts.push(structure);
-				} else if ((structure.structureType === 'constructedWall') && (structure.hits < 300000)) {
+				} else if ((structure.structureType === 'constructedWall') && (structure.hits < 1000000)) {
 					emptyWalls.push(structure);
 				} else if ((structure.structureType === 'road') && (structure.hits < structure.hitsMax)) {
 					emptyRoads.push(structure);

@@ -1,4 +1,4 @@
-const towersRepairAndDefendW48S2 = (gameRoomObj) => {
+const towersRepairAndDefendW49S2 = (gameRoomObj) => {
   const towers = _.filter(gameRoomObj.find(FIND_MY_STRUCTURES), { 'structureType': STRUCTURE_TOWER });
 
   const playerAttackIgnore = ['nrei'];

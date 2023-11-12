@@ -17,6 +17,12 @@ import { hasEmptyStorage } from '../constructions/checkEmptyOrExist/hasEmptyStor
 import { hasEmptySpawn } from '../constructions/checkEmptyOrExist/hasEmptySpawn';
 import { logger } from '../../util/logger';
 
+// prop 1: creep
+// prop 2: target Game.room obj (ex.: Game.rooms.W48S3)
+// prop 3: flag in target room for move creep in room, when game room obj is undefined
+// prop 4: flag in remote harvesting room if remote harvester is needed
+// function gives current role for every creep in target room depending of creep's globalRole and room's needs
+
 export const rolePriorities = (creep, gameRoomObj, roomFlag, remoteHarvestFlag) => {
 
   if (creep) {
@@ -110,15 +116,24 @@ export const rolePriorities = (creep, gameRoomObj, roomFlag, remoteHarvestFlag) 
             creepRole = 'fillStorage';
           } else if (!roleHarvest && creepNotEmpty) {
 
-            if (constructionSites) {
-              creepRole = 'build';
-              build(creep, constructionSites);
-            } else if (!constructionSites && emptyStorage) {
-              creepRole = 'fillStorage';
-              fillStorage(creep, emptyStorage);
-            } else if (!constructionSites && !emptyStorage) {
-              creepRole = 'upgrade';
-              upgrade(creep);
+            if (emptyTowers && !globalRoleTowerKeeper) {
+
+              creepRole = 'fillTower';
+              fillTower(creep, emptyTowers);
+
+            } else {
+
+              if (constructionSites) {
+                creepRole = 'build';
+                build(creep, constructionSites);
+              } else if (!constructionSites && emptyStorage) {
+                creepRole = 'fillStorage';
+                fillStorage(creep, emptyStorage);
+              } else if (!constructionSites && !emptyStorage) {
+                creepRole = 'upgrade';
+                upgrade(creep);
+              }
+
             }
 
           }
@@ -140,7 +155,9 @@ export const rolePriorities = (creep, gameRoomObj, roomFlag, remoteHarvestFlag) 
           } else if (roleHarvest && creepFull) {
             creepRole = 'linkFrom';
           } else if (!roleHarvest && creepNotEmpty) {
-            fillLink(creep, linkFrom);
+            if ((fillLink(creep, linkFrom) === false) && creepNotFull) {
+              creepRole = 'harvest';
+            }
           }
 
         } else if (globalRoleUpgrader2) {

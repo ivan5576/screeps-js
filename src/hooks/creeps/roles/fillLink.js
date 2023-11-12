@@ -7,7 +7,7 @@ export const fillLink = (creep, link) => {
       if (creep.transfer(link, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         creep.moveTo(link);
       }
-    }
+    } else return false;
 
   } else return null;
 

@@ -121,22 +121,28 @@ export const rolePrioritiesW48S3 = (creep) => {
     } else if (creepGlobalRoleRemoteHarvester) {
 
       if (Game.rooms.W48S2) {
-        const hasEnemies = Game.rooms.W48S2.find(FIND_HOSTILE_CREEPS).length;
+        // const hasEnemies = Game.rooms.W48S2.find(FIND_HOSTILE_CREEPS).length;
         if (true) {
-          if ((!creepRoleHarvestRemote && (creepResourceEnergy === 0)) || (creepRoleHarvestRemote && (creepFreeCapacity > 0))) {
-            creep.memory.role = 'harvestRemote';
-            harvestRemote(creep);
-          }
-        } else {
-          const remoteHarvesterWaitPos = new RoomPosition(11, 23, 'W48S3');
           if (!creepRoleHarvestRemote && (creepResourceEnergy === 0)) {
-            if (creep.pos !== Game.rooms.W48S3.remoteHarvesterWaitPos) {
-              creep.moveTo(Game.rooms.W48S3.remoteHarvesterWaitPos);
-            }
+            creep.memory.role = 'harvestRemote';
           } else if (creepRoleHarvestRemote && (creepFreeCapacity > 0)) {
+            harvestRemote(creep);
+          } else if (creepRoleHarvestRemote && (creepFreeCapacity === 0)) {
             creep.memory.role = 'fillStorage';
+          } else if (!creepRoleHarvestRemote && (creepResourceEnergy > 0)) {
+            fillStorage(creep);
           }
         }
+        //  else {
+        //   const remoteHarvesterWaitPos = new RoomPosition(11, 23, 'W48S3');
+        //   if (!creepRoleHarvestRemote && (creepResourceEnergy === 0)) {
+        //     if (creep.pos !== Game.rooms.W48S3.remoteHarvesterWaitPos) {
+        //       creep.moveTo(Game.rooms.W48S3.remoteHarvesterWaitPos);
+        //     }
+        //   } else if (creepRoleHarvestRemote && (creepFreeCapacity > 0)) {
+        //     creep.memory.role = 'fillStorage';
+        //   }
+        // }
       } else {
         const remoteHarvesterWaitPos = new RoomPosition(11, 23, 'W48S3');
         if (!creepRoleHarvestRemote && (creepResourceEnergy === 0)) {
