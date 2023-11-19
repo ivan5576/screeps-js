@@ -15,6 +15,7 @@ import { hasEmptyTowers } from '../constructions/checkEmptyOrExist/hasEmptyTower
 import { hasEmptyExtensions } from '../constructions/checkEmptyOrExist/hasEmptyExtensions';
 import { hasEmptyStorage } from '../constructions/checkEmptyOrExist/hasEmptyStorage';
 import { hasEmptySpawn } from '../constructions/checkEmptyOrExist/hasEmptySpawn';
+import { findClosestExtension } from '../constructions/findClosestExtension';
 import { logger } from '../../util/logger';
 
 // prop 1: creep
@@ -55,6 +56,10 @@ export const rolePriorities = (creep, gameRoomObj, roomFlag, remoteHarvestFlag) 
         const creepNotEmpty = creep.store[RESOURCE_ENERGY] > 0;
         const creepNotFull = creep.store.getFreeCapacity() > 0;
         const creepFull = creep.store.getFreeCapacity() === 0;
+
+        // creeps in memory
+        const hasNoTowerKeeper = Memory.rooms[gameRoomObj.name].globalRole.towerKeeper < 1;
+        const hasNoHarvester = Memory.rooms[gameRoomObj.name].globalRole.harvester < 1;
 
         // constructions
 
@@ -100,9 +105,12 @@ export const rolePriorities = (creep, gameRoomObj, roomFlag, remoteHarvestFlag) 
             } else if (!emptyExtensions && !emptyTowers && emptySpawn) {
               creepRole = 'fillSpawn';
               fillSpawn(creep, emptySpawn);
-            } else if (!emptyExtensions && !emptyTowers && !emptySpawn) {
-              creepRole = 'upgrade';
-              upgrade(creep);
+            } else if (!emptyExtensions && !emptyTowers && !emptySpawn && constructionSites) {
+              creepRole = 'build';
+              build(creep, constructionSites);
+              // } else if (!emptyExtensions && !emptyTowers && !emptySpawn) {
+              //   creepRole = 'upgrade';
+              //   upgrade(creep);
             }
           }
 
@@ -116,20 +124,30 @@ export const rolePriorities = (creep, gameRoomObj, roomFlag, remoteHarvestFlag) 
             creepRole = 'fillStorage';
           } else if (!roleHarvest && creepNotEmpty) {
 
-            if (emptyTowers && !globalRoleTowerKeeper) {
+            if (hasNoTowerKeeper) {
 
-              creepRole = 'fillTower';
-              fillTower(creep, emptyTowers);
+              const emptySpawn = hasEmptySpawn(gameRoomObj);
+
+              if (emptyTowers) {
+                creepRole = 'fillTower';
+                fillTower(creep, emptyTowers);
+              } else if (!emptyTowers && emptyExtensions) {
+                creepRole = 'fillExtension';
+                fillExtension(creep, emptyExtensions);
+              } else if (!emptyTowers && !emptyExtensions && emptySpawn) {
+                creepRole = 'fillSpawn';
+                fillSpawn(creep, emptySpawn);
+              }
 
             } else {
 
-              if (constructionSites) {
-                creepRole = 'build';
-                build(creep, constructionSites);
-              } else if (!constructionSites && emptyStorage) {
+              if (emptyStorage) {
                 creepRole = 'fillStorage';
                 fillStorage(creep, emptyStorage);
-              } else if (!constructionSites && !emptyStorage) {
+              } else if (!emptyStorage && constructionSites) {
+                creepRole = 'build';
+                build(creep, constructionSites);
+              } else if (!emptyStorage && !constructionSites) {
                 creepRole = 'upgrade';
                 upgrade(creep);
               }
@@ -201,8 +219,34 @@ export const rolePriorities = (creep, gameRoomObj, roomFlag, remoteHarvestFlag) 
             } else if (roleHarvest && creepFull) {
               creepRole = 'upgrade';
             } else if (!roleHarvest && creepNotEmpty) {
-              creepRole = 'upgrade';
-              upgrade(creep);
+
+              if (hasNoTowerKeeper && hasNoHarvester) {
+
+                const emptySpawn = hasEmptySpawn(gameRoomObj);
+
+                if (emptyExtensions) {
+                  creepRole = 'fillExtension';
+                  fillExtension(creep, emptyExtensions);
+                } else if (!emptyExtensions && emptySpawn) {
+                  creepRole = 'fillSpawn';
+                  fillSpawn(creep, emptySpawn);
+                } else {
+                  creepRole = 'upgrade';
+                  upgrade(creep);
+                }
+
+              } else {
+
+                if (emptyStorage) {
+                  creepRole = 'fillStorage';
+                  fillStorage(creep, emptyStorage);
+                } else {
+                  creepRole = 'upgrade';
+                  upgrade(creep);
+                }
+
+              }
+
             }
 
           }

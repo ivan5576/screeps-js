@@ -63,5 +63,9 @@ export const writeToMemory = (gameRoomObj) => {
     Memory.rooms[roomName].role = rolesObj;
     Memory.rooms[roomName].bornTime = bornTimeObj;
 
+    if (Memory.rooms[roomName].closestExtensionId === undefined) {
+      Memory.rooms[roomName].closestExtensionId = false;
+    }
+
   } else return null;
 };

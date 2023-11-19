@@ -32,7 +32,7 @@ export const spawnCreep = (gameRoomObj, spawnRoomName) => {
       // creep lifetime
       const bornTime = Game.time;
       const currTime = Game.time;
-      const towerKeeperBornTime = (currTime - Memory.rooms[targetRoomName].bornTime.towerKeeper) > 1400;
+      const towerKeeperBornTime = (currTime - Memory.rooms[targetRoomName].bornTime.towerKeeper) > 1500;
       const harvesterBornTime = (currTime - Memory.rooms[targetRoomName].bornTime.harvester) > 1400;
       const upgrader1BornTime = (currTime - Memory.rooms[targetRoomName].bornTime.upgrader1) > 1400;
       const upgrader2BornTime = (currTime - Memory.rooms[targetRoomName].bornTime.upgrader2) > 1400;
@@ -103,7 +103,7 @@ export const spawnCreep = (gameRoomObj, spawnRoomName) => {
           }
         );
 
-      } else if (((remoteHarvester < 2) || remoteHarvesterBornTime) && remoteHarvesterEnoughEnergy && towerKeeper && harvester && upgrader1 && upgrader2) {
+      } else if (!remoteHarvester && remoteHarvesterBornTime && remoteHarvesterEnoughEnergy && towerKeeper && harvester && upgrader1 && upgrader2) {
 
         freeSpawn.spawnCreep(
           REMOTEHARVESTER.body, remoteHarvesterName,
